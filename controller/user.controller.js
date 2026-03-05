@@ -26,7 +26,7 @@ catch(err){
 
 handleLogin = async (req,res)=>{
   const {email,password} = req.body;
-  if(!body.email || !body.password){
+  if(!email || !password){
     return res.json({
      message:"Please filled up all the required fields."
   });
@@ -62,4 +62,18 @@ catch(err){
 }
 }
 
-module.exports = {handleSignUp,getProfile,handleLogin};
+handleLogout = (req,res)=>{
+  try{
+    res.clearCookie("token1");
+    return res.json({
+      message : "Logout Successfully!"
+    })
+  }
+  catch(err){
+    res.json({
+        error:err.message
+    })
+  }
+}
+
+module.exports = {handleSignUp,getProfile,handleLogin,handleLogout};
