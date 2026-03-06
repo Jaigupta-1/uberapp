@@ -1,21 +1,21 @@
-const user = require('../models/user.model');
+const captain = require('../models/captain.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 handleSignUp = async (req,res)=>{
   const body = req.body;
-  if(!body.email || !body.password || !body.name){
+  if(!body.email || !body.password || !body.fullName.firstName || !body.fullName.lastName || !body.vehicle.color || !body.vehicle.plate || !body.vehicle.capacity || !body.vehicle.vehicleType){
     return res.json({
      message:"Please filled up all the required fields."
   });
   }
   try{
-  const hashedPassword = await user.hashPassword(body.password);
+  const hashedPassword = await captain.hashPassword(body.password);
   body.password = hashedPassword;
-  const client = await user.create(body);
-  const token = client.generateAuthToken();
+  const client = await captain.create(body);
+  const token = client.createToken();
   res.cookie("token",token);
   return res.json({
-    message:"User Created!"
+    message:"captain Created!"
   });
 }
 catch(err){
@@ -32,14 +32,14 @@ handleLogin = async (req,res)=>{
   });
 }
   try{
-  const data = await user.findOne({email}).select('+password');
+  const data = await captain.findOne({email}).select('+password');
   if(!data) return res.json({message:"Invalid email or password!"})
-  const isVerified = await data.verifyPassword(password);
+  const isVerified = await data.comparePassword(password);
   if(!isVerified) return res.json({message:"Invalid email or password!"});
-  const token = data.generateAuthToken();
+  const token = data.createToken();
   res.cookie("token",token);
   return res.json({
-    message:"User Logged In!"
+    message:"captain Logged In!"
   });
 }
 catch(err){
@@ -49,10 +49,10 @@ catch(err){
 }
 } 
 
-getProfile = async (req,res)=>{
+getProfile = async (req,res)=>{verifyPassword
   const name = req.params.name;
   try{
-  const data = await user.findOne({name:name});
+  const data = await captain.findOne({name:name});
   return res.json(data);
 }
 catch(err){
